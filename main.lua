@@ -1,3 +1,5 @@
+-- note[time stamp, position, color]
+
 --images
 local img_padred
 local img_padblue
@@ -12,8 +14,9 @@ local notesize
 local levelspeed
 local padsize
 local missDamage
+local songaudio
 local health = 100
-local levelname = "levels/level1.json"
+local levelname = "unity"
 
 
 function createNote(position, height, red)
@@ -59,7 +62,7 @@ function killNotes()
 end
 
 function jsonFile(file)
-    local file = io.open(file, "r")
+    local file = io.open("levels/"..file.."/notes.json", "r")
     local content = file:read("*a")
     file:close()
     return content
@@ -72,9 +75,11 @@ function love.conf(t)
 end
 
 function loadlevel(filename)
+    songaudio = love.audio.newSource("levels/"..filename.."/song.mp3", "static")
+
     local json = require "json"
     level = json.decode(jsonFile(levelname))
-
+    
     levelspeed = level.speed
     padsize = level.padsize
     notesize = level.noteSize
@@ -102,9 +107,13 @@ function love.load()
 
     --load level
     loadlevel(levelname)
+    songaudio:play()
 end
 
 function love.draw()
+    --check keyboard input
+    checkkeys()
+    
     --draw background
     love.graphics.setBackgroundColor(0.1, 0.1, 0.1, 0)
 
@@ -124,20 +133,23 @@ function love.draw()
 end
 
 function love.keypressed(key)
-    if key=="space" or key=="z"then 
-        if img_pad == img_padblue then
-            img_pad = img_padred
-            padcol = "red"
-        else
-            img_pad = img_padblue
-            padcol = "blue"
-        end
-    end
-
     if key=="r" then
         notes = {}
         loadlevel(levelname)
         health = 100
+    end
+end
+
+function checkkeys()
+    if love.keyboard.isDown("z") then
+        if img_pad == img_padblue then
+            img_pad = img_padred
+            padcol = "red"
+        end
+    else
+        img_pad = img_padblue
+        padcol = "blue"
+
     end
 end
 
