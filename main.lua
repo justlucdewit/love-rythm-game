@@ -4,6 +4,7 @@ local img_padblue
 local img_notered
 local img_noteblue
 local img_pad
+local padcol
 
 --global values
 local notes = {}
@@ -35,7 +36,7 @@ function drawNotes()
                 love.graphics.draw(img_noteblue, note.x, note.y, math.pi/2, notesize/31, notesize/31)
             end
         end
-    end 
+    end     
 end
 
 function updateNotes()
@@ -48,7 +49,7 @@ end
 function killNotes()
     for k, note in pairs(notes) do
         if note.y > love.graphics.getHeight() then
-            if note.x < love.mouse.getX()-padsize/2 or note.x > love.mouse.getX()+padsize/2 then
+            if note.x < love.mouse.getX()-padsize/2 or note.x > love.mouse.getX()+padsize/2 or note.color ~= padcol then
                 health = health - missDamage
             end
 
@@ -97,6 +98,7 @@ function love.load()
     img_padblue = love.graphics.newImage("images/pad_blue.png")
     img_padred = love.graphics.newImage("images/pad_red.png")
     img_pad = img_padred
+    padcol = "red"
 
     --load level
     loadlevel(levelname)
@@ -121,12 +123,14 @@ function love.draw()
     killNotes()
 end
 
-function love.keyreleased(key)
-    if key=="space" then 
+function love.keypressed(key)
+    if key=="space" or key=="z"then 
         if img_pad == img_padblue then
             img_pad = img_padred
+            padcol = "red"
         else
             img_pad = img_padblue
+            padcol = "blue"
         end
     end
 
