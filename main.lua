@@ -15,6 +15,7 @@ local levelspeed
 local padsize
 local missDamage
 local songaudio
+local songlength
 local health = 100
 local levelname = "unity"
 
@@ -75,8 +76,8 @@ function love.conf(t)
 end
 
 function loadlevel(filename)
-    songaudio = love.audio.newSource("levels/"..filename.."/song.mp3", "static")
-
+    songaudio = love.audio.newSource("levels/"..filename.."/song.mp3", "stream")
+    songlength = songaudio:getDuration("seconds")
     local json = require "json"
     level = json.decode(jsonFile(levelname))
     
@@ -94,6 +95,8 @@ function loadlevel(filename)
         end
         createNote(note[2], note[1], red)
     end
+
+    songaudio:play()
 end
 
 function love.load()
@@ -107,7 +110,6 @@ function love.load()
 
     --load level
     loadlevel(levelname)
-    songaudio:play()
 end
 
 function love.draw()
@@ -129,11 +131,16 @@ function love.draw()
     love.graphics.setColor(0, 1, 0)
     love.graphics.rectangle("fill", 25, 25, (love.graphics.getWidth()-50)/100*health, 10)
 
+    --draw debugging
+    love.graphics.print(songaudio:tell("seconds")/songlength*100, 200, 10)
+    love.graphics.print("FPS: "..tostring(love.timer.getFPS()), 10, 10)
+
     killNotes()
 end
 
 function love.keypressed(key)
     if key=="r" then
+        songaudio:stop()
         notes = {}
         loadlevel(levelname)
         health = 100

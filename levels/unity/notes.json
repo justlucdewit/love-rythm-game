@@ -5,5 +5,10 @@
   "noteSize": 50,
   "damage": 5,
   "author": "the fat rat",
-  "notes": []
+  "notes": [
+    [20, 10, 0],
+    [40, 10, 0],
+    [60, 10, 0],
+    [80, 10, 0]
+  ]
 }
